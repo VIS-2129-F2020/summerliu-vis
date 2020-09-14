@@ -194,4 +194,20 @@ df + geom_boxplot(aes(fill=factor(ENG_label))) +
        y="Income")
 ```
 
+#Plot 10 Alternative 2
+```{r}
+ggplot(person_data, aes(x = ENG_label, y = SEX_label, fill = PINCP)) +
+       geom_tile() +
+      scale_x_discrete(name = "Majority race/ethnicity",
+                       labels = c("Native",
+                                  "Not at all",
+                                  "Not Well",
+                                  "Very Well", 
+                                  "Well")) +
+      scale_y_discrete(name = "Total Income") +
+      scale_fill_distiller(palette = "BuGn") +
+      labs(fill = "Total person's income") +
+      theme_minimal()
+```
+
 
