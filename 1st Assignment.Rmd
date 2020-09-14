@@ -1,0 +1,197 @@
+---
+title: "VIS Assignment 1 - Liu"
+author: "Summer Liu"
+date: "9/4/2020"
+output: html_document
+---
+```{r load libraries}
+library(tidycensus)
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+library(ggalt)
+library(ggthemes)
+library(dplyr)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning = FALSE, results = "hide", message = FALSE)
+```
+
+
+#Assignment 1 (09-07-2020)
+
+1. Ability to speak English (ENG) (categorical)
+2. Sex (SEX) (categorical)
+3. Total person's income (PINCP)  (continuous)
+4. Usual hours worked per week past 12 months (WKHP)(continuous)
+5. Year of entry (YOEP) (continuous)
+6. Age (AGEP) (continuous)
+
+
+```{r load person-level microdata variables}
+person_vars_2018 <- pums_variables %>%
+  distinct(year, survey, var_code, 
+           var_label, data_type, level) %>%
+  filter(level == "person", year == 2018, survey == "acs1")
+```
+
+#Data Load
+
+Load 2018 data for the state of NC, including only people between the age of 18 and 25 (to keep sample size smaller than 10,000), since this data should show the relationship among English proficiency, working status, and income. 
+
+```{r}
+area_vars_2018 <- load_variables(2018, "acs1")
+```
+```{r include=FALSE}
+person_data <- get_pums(variables = c("ENG", 
+                                      "SEX", 
+                                      "PINCP", 
+                                      "WKHP", 
+                                      "YOEP",
+                                      "AGEP"),
+                        state = "NC",
+                        year = 2018, 
+                        survey = "acs1",
+                        recode = TRUE) %>%
+  mutate(ENG_label = ifelse(ENG_label == "N/A (less than 5 years old/speaks only English)", 
+                            "Native", 
+                            ENG_label)) %>%
+  filter(AGEP > 18,AGEP < 25) %>%
+  select(ENG_label, SEX_label, PINCP, WKHP, YOEP, AGEP)
+```
+
+#Plot 1
+```{r}
+ggplot(person_data, aes(x=AGEP, y=PINCP)) +
+  geom_point(aes(col=ENG_label, size=WKHP),alpha=0.25, 
+             position = "jitter")+ 
+  geom_smooth(method = "loess", se=F) +
+  xlim(c(18, 25)) + 
+  ylim(c(0, 120000)) +
+  labs(subtitle="Age and Total Income", 
+       y="Total person's income", 
+       x="Age", 
+       title="Scatterplot", 
+       caption="NC Person Data 2018")
+```
+
+
+#Plot 2
+```{r}
+library(ggExtra)
+data(person_data, package = "ggplot2")
+theme_classic()
+g <- ggplot(person_data, aes(ENG_label, PINCP)) + 
+  geom_count() + 
+  geom_smooth(method="lm", se=F)
+
+ggMarginal(g, type = "histogram", fill="transparent")
+Y <- (10 ^(1:10))
+format(Y, scientific = FALSE)
+
+```
+
+
+
+#Plot 3
+```{r}
+coord_polar(theta = "x", start = 0, direction = 1, clip = "on")
+pie <- ggplot(person_data,aes(x = factor(1), fill = factor(ENG_label))) +
+  geom_bar(width = 1)
+pie + coord_polar(theta = "y")
+```
+
+
+
+#Plot 4
+```{r}
+df <- ggplot(person_data,aes(ENG_label, WKHP))
+df + geom_violin() +
+labs(title="Violin plot", 
+       subtitle="English proficiency VS Usual Working Hours per Week",
+       x="English Proficiency",
+       y="Working hours per week")
+```
+
+
+#Plot 5
+```{r}
+library(ggthemes)
+g <- ggplot(person_data, aes(ENG_label, AGEP))
+g + geom_tufteboxplot() + 
+      theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+      labs(title="Tufte Styled Boxplot", 
+           subtitle="English Proficiency vs Age",
+           x="English Proficiency",
+           y="Age")
+theme_set(theme_tufte()) 
+
+```
+
+
+
+#Plot 6
+```{r}
+df <- ggplot(person_data, aes(ENG_label, PINCP))
+df + geom_boxplot(aes(fill=factor(SEX_label))) + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Box plot", 
+       subtitle="English Proficiency VS Income, varied by Gender",
+       x="Egnlish Proficiency",
+       y="Income")
+
+```
+
+
+
+
+#Plot 7
+```{r}
+ggplot(person_data, aes(x=AGEP, y=PINCP)) + 
+  geom_point(col="blue", size=3) +  
+  geom_segment(aes(x=AGEP, 
+                   xend=AGEP, 
+                   y=min(PINCP), 
+                   yend=max(PINCP)), 
+               linetype="dashed", 
+               size=0.1) + 
+  labs(title="Dot Plot", 
+       subtitle="Age VS Income") +  
+  coord_flip()
+```
+
+
+
+#Plot 8
+```{r}
+ggplot(person_data, aes(x=ENG_label, y=PINCP)) + 
+  geom_bar(stat="identity", width=1, fill="tomato3") + 
+  labs(title="English Proficiency VS Income") + 
+  theme(axis.text.x = element_text(angle=15, vjust=0.9))
+```
+
+
+
+#Plot 9
+```{r}
+coord_polar(theta = "x", start = 0, direction = 1, clip = "on")
+pie <- ggplot(person_data,aes(x = factor(1), fill = factor(WKHP))) +
+  geom_bar(width = 1)
+pie + coord_polar(theta = "y")
+```
+
+
+
+#Plot 10
+```{r}
+df <- ggplot(person_data, aes(WKHP, PINCP))
+df + geom_boxplot(aes(fill=factor(ENG_label))) + 
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Box plot", 
+       subtitle="Weekly working hours vs Income, varied by English Proficiency",
+       x="Weekly working hours",
+       y="Income")
+```
+
+
