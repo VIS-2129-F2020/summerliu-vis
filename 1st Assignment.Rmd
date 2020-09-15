@@ -62,6 +62,7 @@ person_data <- get_pums(variables = c("ENG",
 ```
 
 #Plot 1
+##There are a lot of overlaying of the spots/ bubbles here, so I don't think the data is representated very clearly. I am interested to explore how to represent a large sample of data. 
 ```{r}
 ggplot(person_data, aes(x=AGEP, y=PINCP)) +
   geom_point(aes(col=ENG_label, size=WKHP),alpha=0.25, 
@@ -105,6 +106,7 @@ pie + coord_polar(theta = "y")
 
 
 #Plot 4
+##I like how this one shows that if you speak English very well, or if you are a Native, the patterns are very similar, it basically slow transition to the other pattern. I think it shows the strong correlation here. 
 ```{r}
 df <- ggplot(person_data,aes(ENG_label, WKHP))
 df + geom_violin() +
@@ -174,6 +176,7 @@ ggplot(person_data, aes(x=ENG_label, y=PINCP)) +
 
 
 #Plot 9
+##I think the visual representation is very vibrant, but unfortunately it dones't tell much about the data... 
 ```{r}
 coord_polar(theta = "x", start = 0, direction = 1, clip = "on")
 pie <- ggplot(person_data,aes(x = factor(1), fill = factor(WKHP))) +
@@ -184,6 +187,7 @@ pie + coord_polar(theta = "y")
 
 
 #Plot 10
+##I don't think this box plot represented the data well, because it is hard to tell the variation. I think if I limit the income between 0 to 60,000; then the differences should be more clear. 
 ```{r}
 df <- ggplot(person_data, aes(WKHP, PINCP))
 df + geom_boxplot(aes(fill=factor(ENG_label))) + 
@@ -195,6 +199,8 @@ df + geom_boxplot(aes(fill=factor(ENG_label))) +
 ```
 
 #Plot 10 Alternative 2
+
+##I saw the heatmap example from TA Taelor and I liked the idea, and the visual presentation, though I think I need to twist the color a bit more to better represent the data. 
 ```{r}
 ggplot(person_data, aes(x = ENG_label, y = SEX_label, fill = PINCP, scientific=FALSE)) +
        geom_tile() +
@@ -210,4 +216,6 @@ ggplot(person_data, aes(x = ENG_label, y = SEX_label, fill = PINCP, scientific=F
       theme_minimal()
 ```
 
+#SUMMARY
 
+##Unsure who will be reading this summary, but I would like to thank Taelor for being very patient with me. I have bothered her for about 10 times for all sorts of minor issues, but she never avoided me. I would also like to thank Aleks for helping me reviewing this assignment (when I truly feel bad asking Taelor again). I would like to thank Carole for your help as well, you have efficiently solved a few minor issues for me. I will keep working on R and keep “shamelessly” asking help from all of you. Hopefully by final week of this semester, I can honestly say that “I can work (a bit) in R!".
