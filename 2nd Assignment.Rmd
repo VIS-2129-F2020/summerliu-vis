@@ -1,10 +1,11 @@
 ---
-title: "Assignment 2"
+title: "VIS Assignment 2 - Liu"
 author: "Summer Liu"
-date: "9/16/2020"
-output: html_document:
-  toc: true
-  toc_float: true
+date: "9/20/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 # Data Load
@@ -90,7 +91,7 @@ states_transformed <- USA_map %>%
 urlfile="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/07-07-2020.csv"
 
 Covid_data_070720 <- read.csv(url(urlfile))
-head(Covid_data_0707)
+head(Covid_data_070720)
 
 covid_states_070720 <-states_transformed %>%
   left_join(Covid_data_070720, by = c("name" = "Province_State")) %>%
@@ -99,7 +100,7 @@ covid_states_070720 <-states_transformed %>%
 ```
 
 ##### Map Visualization
-```{r Rivsed based on Carole's code}
+```{r Revised_based_on_Caroles_code_1}
 ggplot(covid_states_070720, aes(fill = Confirmed)) +
   geom_sf(color = "lightblue") +
   scale_fill_viridis_c(
@@ -112,7 +113,7 @@ ggplot(covid_states_070720, aes(fill = Confirmed)) +
   theme(legend.background = element_blank())
 ```
 
-```{r Revised based on Carole's code}
+```{r Revised_based_on_Caroles_code_2}
 covid_proportional_symbol_map <- covid_states_070720%>%
   st_centroid()
 
@@ -128,7 +129,7 @@ ggplot(states_transformed) +
     range = c(0, 25)) +
   theme_classic()
 ```
-```{r Revised based on Carole's code}
+```{r Revised_based_on_Caroles_code_3}
 covid_cartogram_ncont <- covid_states_070720 %>%
   cartogram_ncont("pop")
 
@@ -143,24 +144,82 @@ ggplot(covid_cartogram_ncont, aes(fill = People_Tested)) +
   theme(legend.background = element_blank())
 ```
 
-```{r tidycensus data mapping visualization}
+```{r tidycensus_data_mapping_visualization_1-County}
 vars <- load_variables(year = 2018,
                       dataset = "acs5",
                       cache = TRUE)
 
 Wake_Income_2018<- get_acs(state = "NC", county = "Wake", geography = "tract",
                   variables = "B19049_001", geometry = TRUE)
-head(Wake)
-Wake %>%
+head(Wake_Income_2018)
+Wake_Income_2018 %>%
 ggplot(aes(fill = estimate)) +
+  theme(panel.grid.major = element_blank()) +
   geom_sf(color = NA) +
   coord_sf(crs = USA_EPSG2007) +
   scale_fill_viridis_c(option = "plasma",
                        name = "Median Household Income 2018, Wake County, NC")
 ```
+```{r tidycensus_data_mapping_visualization_2-State}
+NC_Data_Population <- get_acs("county", 
+                     variables = "B01003_001",
+                     state = "NC",
+                     geometry = TRUE)
+head(NC_Data_Population)
+ggplot(NC_Data_Population, aes(fill = estimate)) +
+  theme(panel.grid.major = element_blank()) +
+  geom_sf(color = NA) +
+  coord_sf(crs = USA_EPSG2007) +
+  scale_fill_viridis_c(option = "viridis",
+                           name = "NC Population")
+```
+```{r tidycensus_data_mapping_visualization_3-State}
+NC_Population_symbol_map <- NC_Data_Population%>%
+  st_centroid()
+
+ggplot(NC_Population_symbol_map) +
+  geom_sf(fill = NA, color = "white") +
+  geom_sf(data = NC_Data_Population, 
+          aes(size = estimate),
+          alpha = 0.9, color = "orange") +
+  scale_size_continuous(name = "NC Population Symbol Map",
+    breaks = seq(100000, 5000000, by = 100000),
+    labels = formatC(seq(100000, 5000000, by = 100000), 
+                     big.mark = ",", format = "f", digits = 0),
+    range = c(0, 10)) +
+  theme_classic()
+```
 
 
+```{r tidycensus_data_mapping_visualization_4-State}
+NC_Pop_cartogram_ncont <- NC_Data_Population %>%
+  st_transform(crs = USA_EPSG2007)%>%
+  cartogram_ncont("estimate")
 
+ggplot(NC_Pop_cartogram_ncont, aes(fill = estimate)) +
+  geom_sf(color = NA) +
+  scale_fill_viridis_c(
+    name = "NC Population Cartogram",
+    breaks = seq(100000, 5000000, by = 100000),
+    labels = formatC(seq(100000, 5000000, by = 100000), 
+                     big.mark = ",", format = "f", digits = 0)) +
+  theme_map() +
+  theme(legend.background = element_rect("gray"))
+```
+
+```{r tidycensus_data_mapping_visualization_5-Country}
+State_population <- get_acs(geography = "state", 
+                       variable = "B01003_001", 
+                       survey = "acs5", 
+                       geometry = TRUE,
+                       shift_geo = TRUE)
+scale_color_viridis_c(guide = "colourbar", aesthetics = "fill")
+
+ggplot(State_population, aes(fill = estimate, col = estimate)) + 
+  geom_sf() + 
+  scale_fill_viridis_c() + 
+  scale_color_viridis_c()
+```
 
 
 
