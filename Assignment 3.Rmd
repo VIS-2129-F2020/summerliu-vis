@@ -281,8 +281,7 @@ bottom_side <- st_bbox(PublicSchool)$ymin
 
 ggplot(OpenSpace) +
   geom_sf(fill = "olivedrab4", color = NA) +
-  geom_sf(data = PublicSchool, size = 2, color = "brown",
-          aes(color = openspace_dist)) +
+  geom_sf(data = PublicSchool, size = 2, aes(color = openspace_dist)) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_color_viridis_c() +
