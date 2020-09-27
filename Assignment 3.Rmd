@@ -163,10 +163,11 @@ I would like to show the overlaying of Public schools and greenery/ Open spaces 
 ggplot(BostonNeighborhood) +
   geom_sf(fill = "lightgray", color = NA) + 
   geom_sf(data = OpenSpace, color = "forestgreen", size = 1) +
-  geom_sf(data = PublicSchool, color = "brown", size = 2) + 
+  geom_sf(data = PublicSchool, size = 2, aes(color = "brown")) +
   theme_map()
   annotation_scale()
 ```
+
 I wanted to see the amount of parks/ open spaces per neighborhood, and this map is showing a highly identical pattern with the public school one. 
 
 ```{r}
