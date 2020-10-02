@@ -24,7 +24,7 @@ library(ggspatial)
 ```
 
 ```{r load park locations}
-CPL_parks <- st_read("https://data.townofcary.org/explore/dataset/parks-and-recreation-feature-map/download/?format=kml&timezone=America/New_York&lang=en")
+CPP_parks <- st_read("https://data.townofcary.org/explore/dataset/parks-and-recreation-feature-map/download/?format=kml&timezone=America/New_York&lang=en")
 ```
 
 ```{r}
@@ -77,19 +77,19 @@ otpcon <- otp_connect()
 
 
 ```{r}
-iso_5min_walk <- 
-  otp_isochrone(otpcon = otpcon, fromPlace = CPL_parks, 
-                mode = "WALK", cutoffSec = 300) %>%
+iso_10min_walk <- 
+  otp_isochrone(otpcon = otpcon, fromPlace = CPP_parks, 
+                mode = "WALK", cutoffSec = 600) %>%
   st_transform(crs = NC_state_plane) %>%
   mutate(mode = "walk")
 
-iso_5min_drive <- 
-  otp_isochrone(otpcon = otpcon, fromPlace = CPL_parks, 
-                mode = "CAR", cutoffSec = 300) %>%
+iso_10min_drive <- 
+  otp_isochrone(otpcon = otpcon, fromPlace = CPP_parks, 
+                mode = "CAR", cutoffSec = 600) %>%
   st_transform(crs = NC_state_plane) %>%
   mutate(mode = "drive")
 
-iso_all_modes <- rbind(iso_5min_drive, iso_5min_walk)
+iso_all_modes <- rbind(iso_10min_drive, iso_10min_walk)
 
 otp_stop()
 ```
@@ -104,7 +104,7 @@ bottom_side <- st_bbox(iso_all_modes)$ymin
 ggplot(iso_all_modes) +
   annotation_map_tile(zoomin = 0, progress = "none") +
   geom_sf(aes(fill = mode), alpha = 0.5) +
-  geom_sf(data = CPL_parks) +
+  geom_sf(data = CPP_parks) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_fill_viridis_d(name = "Area that is reachable within 5 minutes",
@@ -118,7 +118,7 @@ ggplot(iso_all_modes) +
 ggplot(iso_all_modes) +
   annotation_map_tile(zoomin = 0, type = "cartolight", progress = "none") +
   geom_sf(aes(fill = mode), alpha = 0.5) +
-  geom_sf(data = CPL_parks) +
+  geom_sf(data = CPP_parks) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_fill_viridis_d(name = "Area that is reachable within 5 minutes",
@@ -134,7 +134,7 @@ ggplot(iso_all_modes) +
   annotation_map_tile(zoomin = 0, type = "stamenwatercolor", 
                       progress = "none") +
   geom_sf(aes(fill = mode), alpha = 0.5) +
-  geom_sf(data = CPL_parks) +
+  geom_sf(data = CPP_parks) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_fill_discrete(name = "Area that is reachable within 5 minutes",
@@ -149,7 +149,7 @@ ggplot(iso_all_modes) +
 ggplot(iso_all_modes) +
   annotation_map_tile(zoomin = 0, type = "stamenbw", progress = "none") +
   geom_sf(aes(fill = mode), alpha = 0.5) +
-  geom_sf(data = CPL_parks) +
+  geom_sf(data = CPP_parks) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_fill_viridis_d(name = "Area that is reachable within 5 minutes",
@@ -165,7 +165,7 @@ ggplot(iso_all_modes) +
   annotation_map_tile(zoomin = 0, type = "hotstyle", 
                       progress = "none") +
   geom_sf(aes(fill = mode), alpha = 0.5) +
-  geom_sf(data = CPL_parks) +
+  geom_sf(data = CPP_parks) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_fill_discrete(name = "Area that is reachable within 5 minutes",
@@ -180,7 +180,7 @@ ggplot(iso_all_modes) +
 ggplot(iso_all_modes) +
   geom_sf(data = cary_streets, color = "gray") +
   geom_sf(aes(fill = mode), alpha = 0.5) +
-  geom_sf(data = CPL_parks) +
+  geom_sf(data = CPP_parks) +
   coord_sf(xlim = c(left_side, right_side), 
            ylim = c(bottom_side, top_side), expand = FALSE) +
   scale_fill_viridis_d(name = "Area that is reachable within 5 minutes",
@@ -200,11 +200,11 @@ ggplot(iso_areas,
   geom_point() +
   scale_x_continuous(name = 
             "Area within a five-minute walking distance\nof a public park\n(square km)",
-            breaks = breaks <- seq(10000, 500000, by = 50000),
-            labels = breaks / 1000000) +
+            breaks = breaks <- seq(100000, 1000000, by = 100000),
+            labels = breaks / 100000) +
   scale_y_continuous(name = 
             "Area within a five-minute driving distance\nof a public park\n(square km)",
-            breaks = breaks <- seq(0, 2700000, by = 100000),
+            breaks = breaks <- seq(0, 26000000, by = 1000000),
             labels = breaks / 100000) +
   theme_bw()
 
