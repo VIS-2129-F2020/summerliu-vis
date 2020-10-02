@@ -23,6 +23,8 @@ library(ggthemes)
 library(ggspatial)
 ```
 
+## Cary Public Parks data and NC state map load
+
 ```{r load park locations}
 CPP_parks <- st_read("https://data.townofcary.org/explore/dataset/parks-and-recreation-feature-map/download/?format=kml&timezone=America/New_York&lang=en")
 ```
@@ -52,7 +54,7 @@ ggplot(cary_streets) +
   theme_map()
 ```
 
-
+## OTP data
 
 ```{r}
 path_otp <- otp_dl_jar("OTP")
@@ -75,6 +77,7 @@ otp_setup(otp = path_otp, dir = path_data, memory =1024)
 otpcon <- otp_connect()
 ```
 
+### Creating Isochrones
 
 ```{r}
 iso_10min_walk <- 
@@ -188,6 +191,7 @@ ggplot(iso_all_modes) +
   theme_map() 
 ```
 
+### Calcuate and compare isochrone areas
 
 ```{r}
 iso_areas <- iso_all_modes %>%
@@ -199,14 +203,14 @@ ggplot(iso_areas,
        aes(x = as.numeric(walk), y = as.numeric(drive))) +
   geom_point() +
   scale_x_continuous(name = 
-            "Area within a five-minute walking distance\nof a public park\n(square km)",
-            breaks = breaks <- seq(100000, 1000000, by = 100000),
+            "Area within a ten-minute walking distance\nof a public park\n(square km)",
+            breaks = breaks <- seq(100000, 2000000, by = 100000),
             labels = breaks / 100000) +
   scale_y_continuous(name = 
-            "Area within a five-minute driving distance\nof a public park\n(square km)",
-            breaks = breaks <- seq(0, 26000000, by = 1000000),
+            "Area within a ten-minute driving distance\nof a public park\n(square km)",
+            breaks = breaks <- seq(0, 26000000, by = 2000000),
             labels = breaks / 100000) +
-  theme_bw()
+  theme_economist()
 
 ```
 
