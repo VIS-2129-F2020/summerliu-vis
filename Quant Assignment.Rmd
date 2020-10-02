@@ -1,0 +1,109 @@
+---
+title: "Quant Assignment"
+author: "Summer Liu"
+date: "10-02-2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r load libraries}
+library(tidycensus)
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+library(ggalt)
+library(ggthemes)
+library(dplyr)
+```
+
+## Load Variables
+
+1. Ability to speak English (ENG) (categorical)
+2. Sex (SEX) (categorical)
+3. Total person's income (PINCP)  (continuous)
+4. Usual hours worked per week past 12 months (WKHP)(continuous)
+5. Year of entry (YOEP) (continuous)
+6. Age (AGEP) (continuous)
+7. Cognitive difficulty (DREM) (categorical)
+
+
+```{r load person-level microdata variables}
+person_vars_2018 <- pums_variables %>%
+  distinct(year, survey, var_code, 
+           var_label, data_type, level) %>%
+  filter(level == "person", year == 2018, survey == "acs1")
+```
+
+
+Load 2018 data for the state of NC, including only people between the age of 18 and 25 (to keep sample size smaller than 10,000), since this data should show the relationship among English proficiency, working status, and income. 
+
+```{r}
+area_vars_2018 <- load_variables(2018, "acs1")
+```
+```{r include=FALSE}
+person_data <- get_pums(variables = c("ENG", 
+                                      "SEX", 
+                                      "PINCP", 
+                                      "WKHP", 
+                                      "YOEP",
+                                      "AGEP", 
+                                      "DREM"),
+                        state = "NC",
+                        year = 2018, 
+                        survey = "acs1",
+                        recode = TRUE) %>%
+  mutate(ENG_label = ifelse(ENG_label == "N/A (less than 5 years old/speaks only English)", 
+                            "Native", 
+                            ENG_label)) %>%
+  filter(AGEP > 18,AGEP < 25) %>%
+  select(ENG_label, SEX_label, PINCP, WKHP, YOEP, AGEP, DREM)
+```
+
+### Relationship between two continuous variables
+
+```{r}
+correlation <- cor.test(person_data$PINCP, person_data$AGEP)
+
+correlation
+```
+
+### Relationship between a continuous variable and a categorical variable 
+
+```{r}
+anova <- aov(PINCP ~ DREM, data = person_data)
+
+summary(anova)
+```
+
+### Relationship between a continuous variable and a binary variable
+
+```{r}
+difference = t.test(PINCP ~ SEX_label,
+                    data = person_data)
+
+difference
+```
+
+### Relatship between two categorical variables
+
+```{r}
+chi_sq <- chisq.test(person_data$ENG_label, person_data$SEX_label) 
+
+chi_sq
+```
+
+The p-value is more than 0.05, so the relationship is not significant at a 95-percent confidence level.
+
+```{r}
+chi_sq$observed
+```
+
+```{r}
+chi_sq$expected
+```
+
+
+
