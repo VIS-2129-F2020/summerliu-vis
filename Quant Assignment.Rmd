@@ -69,6 +69,8 @@ correlation <- cor.test(person_data$PINCP, person_data$AGEP)
 
 correlation
 ```
+Since the correlation value is between 0.30 and 0.49, there is a moderate degree of correlation between these the person's age, and total income. 
+
 
 ### Relationship between a continuous variable and a categorical variable 
 
@@ -77,6 +79,8 @@ anova <- aov(PINCP ~ DREM, data = person_data)
 
 summary(anova)
 ```
+The p-value is lower than 0.05, which means that at a 95-percent confidence interval, there is a significant association between the level of cognitive difficulty and total income.
+
 
 ### Relationship between a continuous variable and a binary variable
 
@@ -86,6 +90,8 @@ difference = t.test(PINCP ~ SEX_label,
 
 difference
 ```
+The p-value is lower than 0.05, which means that at 95% of confidence, there is a significant association between gender and total income.
+
 
 ### Relatship between two categorical variables
 
