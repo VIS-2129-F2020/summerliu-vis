@@ -7,7 +7,7 @@ output: html_document
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=TRUE, warning = FALSE, results = "hide", message = FALSE)
+knitr::opts_chunk$set(echo=TRUE, warning = FALSE, message = FALSE)
 ```
 
 # Data Load
@@ -27,10 +27,14 @@ library(htmltools)
 library(htmlwidgets)
 ```
 
+## Read Data
+
 ```{r}
 OpenSpace <- st_read("https://opendata.arcgis.com/datasets/035a5a811a4c41669501cbfd82ef82f6_0.geojson") %>%
   mutate(acres = as.numeric(st_area(geometry)) / 4046.86) 
 ```
+
+### Leaflet map showing polygons
 
 ```{r}
 Wake_County_OS1 <- leaflet(OpenSpace) %>%
@@ -44,6 +48,8 @@ Wake_County_OS1
 ```
 
 
+### Highlight area
+
 ```{r}
 Wake_County_OS2 <- leaflet(OpenSpace) %>%
   addProviderTiles(providers$CartoDB) %>%
@@ -56,6 +62,8 @@ Wake_County_OS2 <- leaflet(OpenSpace) %>%
 
 Wake_County_OS2
 ```
+
+### Highlight area with labels
 
 ```{r}
 OpenSpace$describe <- 
@@ -77,6 +85,7 @@ Wake_County_OS3
 ```
 WHAT DOESN'T THE NAME SHOW UP?
 
+#### Leaflet map showing points
 
 ```{r}
 OpenSpace_pts <- st_centroid(OpenSpace)
@@ -91,6 +100,7 @@ Wake_County_OS4 <- leaflet(OpenSpace_pts) %>%
 Wake_County_OS4
 ```
 
+#### Leaflet map showing circles
 
 ```{r}
 Wake_County_OS5 <- leaflet(OpenSpace_pts) %>%
@@ -107,6 +117,7 @@ Wake_County_OS5 <- leaflet(OpenSpace_pts) %>%
 Wake_County_OS5
 ```
 
+#### Leaflet map showing circles, varied by sizes
 
 ```{r}
 Wake_County_OS6 <- leaflet(OpenSpace_pts) %>%
