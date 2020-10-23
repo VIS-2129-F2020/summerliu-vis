@@ -31,7 +31,8 @@ library(htmlwidgets)
 
 ```{r}
 OpenSpace <- st_read("https://opendata.arcgis.com/datasets/035a5a811a4c41669501cbfd82ef82f6_0.geojson") %>%
-  mutate(acres = as.numeric(st_area(geometry)) / 4046.86) 
+  mutate(acres = as.numeric(st_area(geometry)) / 4046.86) %>%
+  mutate(name = ifelse(is.na(NAME), "unnamed", NAME)) 
 ```
 
 ### Leaflet map showing polygons
@@ -145,6 +146,16 @@ saveWidget(Wake_County_OS6, file = "parks.html")
 ```
 
 
+```{r}
+color_bins <- colorFactor(heat.colors(12), OpenSpace_pts$TYPE) 
+
+Wake_County_OS7 <- leaflet(OpenSpace_pts) %>%
+  addProviderTiles("Stamen.TonerLite") %>%
+  addCircles(fillColor = color_bins(OpenSpace_pts$TYPE)) %>% 
+  addControl("Open Spaces in Wake County", position = "topright")
+
+Wake_County_OS7
+```
 
 
 
