@@ -145,23 +145,60 @@ saveWidget(Wake_County_OS5, file = "parks.html")
 saveWidget(Wake_County_OS6, file = "parks.html")
 ```
 
+#### Additional Explorations 
 
 ```{r}
 color_bins <- colorFactor(heat.colors(12), OpenSpace_pts$TYPE) 
 
 Wake_County_OS7 <- leaflet(OpenSpace_pts) %>%
   addProviderTiles("Stamen.TonerLite") %>%
-  addCircles(fillColor = color_bins(OpenSpace_pts$TYPE)) %>% 
+  addCircles(color= color_bins(OpenSpace_pts$TYPE)) %>% 
   addControl("Open Spaces in Wake County", position = "topright")
 
 Wake_County_OS7
 ```
 
 
+```{r}
+color_bins <- colorFactor(heat.colors(12), OpenSpace_pts$TYPE) 
+
+Wake_County_OS8 <- leaflet(OpenSpace_pts) %>%
+  addProviderTiles(providers$Stamen) %>%
+  addCircles(color= color_bins(OpenSpace_pts$TYPE), 
+             stroke = FALSE, radius = ~acres,
+              highlightOptions = highlightOptions(fillColor = "darkgreen", 
+                                                  fillOpacity = 0.5),
+              popup = ~describe) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS8
+```
 
 
 
+```{r}
+color_bins <- colorFactor(heat.colors(8), OpenSpace_pts$TYPE) 
 
+OpenSpace$describe <- 
+  paste(OpenSpace$name, "<br>", 
+               prettyNum(OpenSpace$acres, digits = 2), " acres") %>% 
+  lapply(htmltools::HTML)
+
+Wake_County_OS9 <- leaflet(OpenSpace) %>%
+  addProviderTiles(providers$CartoDB.Voyager) %>%
+  addPolygons(color= color_bins(OpenSpace_pts$TYPE), 
+                                stroke = FALSE,
+              highlightOptions = highlightOptions(fillColor = "darkgreen", 
+                                                  fillOpacity = 0.5),
+              label = ~describe) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS9
+```
 
 
 
