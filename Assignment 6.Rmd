@@ -1,0 +1,142 @@
+---
+title: "Assignment 6"
+author: "Summer Li"
+date: "10/22/2020"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning = FALSE, results = "hide", message = FALSE)
+```
+
+# Data Load
+
+```{r}
+library(dplyr)
+library(knitr)
+library(osmdata)
+library(opentripplanner)
+library(tidyverse)
+library(sf)
+library(ggthemes)
+library(ggspatial)
+library(tidyverse)
+library(leaflet)
+library(htmltools)
+library(htmlwidgets)
+```
+
+```{r}
+OpenSpace <- st_read("https://opendata.arcgis.com/datasets/035a5a811a4c41669501cbfd82ef82f6_0.geojson") %>%
+  mutate(acres = as.numeric(st_area(geometry)) / 4046.86) 
+```
+
+```{r}
+Wake_County_OS1 <- leaflet(OpenSpace) %>%
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addPolygons(fillColor = "green", stroke = FALSE) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS1
+```
+
+
+```{r}
+Wake_County_OS2 <- leaflet(OpenSpace) %>%
+  addProviderTiles(providers$CartoDB) %>%
+  addPolygons(fillColor = "green", stroke = FALSE,
+              highlightOptions = highlightOptions(fillColor = "darkgreen", 
+                                                  fillOpacity = 1)) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS2
+```
+
+```{r}
+OpenSpace$describe <- 
+  paste(OpenSpace$name, "<br>", 
+               prettyNum(OpenSpace$acres, digits = 2), " acres") %>% 
+  lapply(htmltools::HTML)
+
+Wake_County_OS3 <- leaflet(OpenSpace) %>%
+  addProviderTiles(providers$CartoDB.Voyager) %>%
+  addPolygons(fillColor = "green", stroke = FALSE,
+              highlightOptions = highlightOptions(fillColor = "darkgreen", 
+                                                  fillOpacity = 1),
+              label = ~describe) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS3
+```
+WHAT DOESN'T THE NAME SHOW UP?
+
+
+```{r}
+OpenSpace_pts <- st_centroid(OpenSpace)
+
+Wake_County_OS4 <- leaflet(OpenSpace_pts) %>%
+  addProviderTiles(providers$OpenStreetMap) %>%
+  addMarkers(popup = ~describe) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS4
+```
+
+
+```{r}
+Wake_County_OS5 <- leaflet(OpenSpace_pts) %>%
+  addProviderTiles(providers$Stamen) %>%
+  addCircles(fillColor = "green", color = "green", 
+             stroke = FALSE, radius = 250,
+              highlightOptions = highlightOptions(fillColor = "darkgreen", 
+                                                  fillOpacity = 1),
+              popup = ~describe) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS5
+```
+
+
+```{r}
+Wake_County_OS6 <- leaflet(OpenSpace_pts) %>%
+  addProviderTiles(providers$Stamen) %>%
+  addCircles(fillColor = "green", color = "green", 
+             stroke = FALSE, radius = ~acres,
+              highlightOptions = highlightOptions(fillColor = "darkgreen", 
+                                                  fillOpacity = 1),
+              popup = ~describe) %>%
+  addControl("Open Spaces in Wake County", position = "topright") %>%
+  addControl('<a href="https://data-ral.opendata.arcgis.com/datasets/Wake::open-space?geometry=-78.850%2C35.823%2C-78.664%2C35.872">Data source</a>',
+             position = "bottomleft")
+
+Wake_County_OS6
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
