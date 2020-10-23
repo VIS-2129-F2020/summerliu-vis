@@ -124,6 +124,14 @@ Wake_County_OS6
 ```
 
 
+```{r}
+saveWidget(Wake_County_OS1, file = "parks.html")
+saveWidget(Wake_County_OS2, file = "parks.html")
+saveWidget(Wake_County_OS3, file = "parks.html")
+saveWidget(Wake_County_OS4, file = "parks.html")
+saveWidget(Wake_County_OS5, file = "parks.html")
+saveWidget(Wake_County_OS6, file = "parks.html")
+```
 
 
 
